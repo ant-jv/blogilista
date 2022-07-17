@@ -1,0 +1,9 @@
+PUT http://localhost:3003/api/blogs/62d17637c53d98d110384e05
+Content-Type: application/json
+
+{
+    "title": "Testiotsikko 4",
+    "author": "Testikirjoittaja 4",
+    "url": "Testiurli_3",
+    "likes": 30000
+}
