@@ -1,11 +1,11 @@
 POST http://localhost:3003/api/blogs
 Content-Type: application/json
-Authorization: bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6ImFhYWFhYWFhYSIsImlkIjoiNjJkYWJlNmU4M2Y2NTdiYTY1OWNjMjEyIiwiaWF0IjoxNjU4NTYzMjQ0fQ.rR4wYZdp04BQPiRxtfOy7pKk2jirJWvt2evVKfFPP2M
+Authorization: bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6Imphc2thIiwiaWQiOiI2MmRiZjlkOThkZDk2NjExZDc3NThiOWQiLCJpYXQiOjE2NTg1ODM1NDJ9.Uij5C0KdsHFF2NPeieWAk3M7STsne74sEmCN83EVuko
 
 {
-    "title": "Kokeiluotsikko",
-    "author": "Kokeilukirjoittaja",
-    "url": "kokeiluurli",
-    "likes": 987,
-    "user": "62dabe6e83f657ba659cc212"
+    "title": "Jaska Title",
+    "author": "Jaska Jaskanen",
+    "url": "jaskaurli",
+    "likes": 6969,
+    "user": "62dbf9d98dd96611d7758b9d"
 }

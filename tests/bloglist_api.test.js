@@ -5,11 +5,26 @@ const app = require('../app')
 const api = supertest(app)
 const Blog = require('../models/blog')
 const bcrypt = require('bcrypt')
-const User = require('../models/users')
+const User = require('../models/user')
 
 beforeEach(async () => {
+  await User.deleteMany({})
+
+  const passwordHash = await bcrypt.hash('sekret', 10)
+  const user = new User({ username: 'root', passwordHash })
+
+  await user.save()
+
+  const users = await User.find({})
+
+  blogUserId = users[0]._id.toString()
+
   await Blog.deleteMany({})
-  await Blog.insertMany(helper.initialBlogs)
+
+  const initialBlogsWithUser = helper.initialBlogs.map(obj => ({ ...obj, user: blogUserId }))
+
+  await Blog.insertMany(initialBlogsWithUser)
+
 })
 
 describe('Retrieving information from database', () => {
@@ -36,17 +51,31 @@ describe('Retrieving information from database', () => {
 
 describe('Adding, deleting, and editing blogs', () => {
 
+  beforeEach(async () => {
+    const loggedUser = await api
+      .post('/api/login')
+      .send({ "username": "root", "password": "sekret" })
+    
+    authHeader = "bearer " + loggedUser._body.token
+
+    const userlist = await helper.usersInDb()
+    user_id = userlist[0].id
+  })
+
   test('blog is added to the database', async () => {
+
       const newBlog = {
         title: "Testiblogi",
         author: "Antti Viljanen",
         url: "http://www.jokinosoite.com/testiblogi.html",
-        likes: 0
+        likes: 0,
+        user: user_id
       }
 
       await api
         .post('/api/blogs')
         .send(newBlog)
+        .set('Authorization', authHeader)
         .expect(201)
         .expect('Content-Type', /application\/json/)
       
@@ -65,11 +94,13 @@ describe('Adding, deleting, and editing blogs', () => {
       title: "Testijuttu",
       author: "Antti Viljanen",
       url: "https://www.jotakiiinz.fi/testi",
+      user: user_id
     }
 
     await api
       .post('/api/blogs')
       .send(newBlog)
+      .set('Authorization', authHeader)
       .expect(201)
       .expect('Content-Type', /application\/json/)
     
@@ -83,12 +114,14 @@ describe('Adding, deleting, and editing blogs', () => {
   test('Returns 400 bad request if request does not include title and url', async () => {
     const newBlog = {
       url: "http://www.jokinosoite.com/testiblogi.html",
-      likes: 1
+      likes: 1,
+      user: user_id
     }
 
     await api
       .post('/api/blogs')
       .send(newBlog)
+      .set('Authorization', authHeader)
       .expect(400)
       .expect('Content-Type', /application\/json/)
 
@@ -98,8 +131,10 @@ describe('Adding, deleting, and editing blogs', () => {
     test('succeeds with status 204 if deleted', async () => {
       const blogsInDb = await helper.blogsInDb()
       const blogToDelete = blogsInDb[0]
-      await api.delete(`/api/blogs/${blogToDelete.id}`)
-      expect(204)
+      await api
+        .delete(`/api/blogs/${blogToDelete.id}`)
+        .set('Authorization', authHeader)
+        .expect(204)
 
       const blogsAtEnd = await helper.blogsInDb()
 
@@ -141,14 +176,6 @@ describe('Adding, deleting, and editing blogs', () => {
 //User tests
 
 describe('when there is initially one user at db', () => {
-  beforeEach(async () => {
-    await User.deleteMany({})
-
-    const passwordHash = await bcrypt.hash('sekret', 10)
-    const user = new User({ username: 'root', passwordHash })
-
-    await user.save()
-  })
 
   test('creation succeeds with a fresh username', async () => {
     const usersAtStart = await helper.usersInDb()

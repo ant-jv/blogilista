@@ -52,24 +52,23 @@ const blogs = [
 ]
 
 describe('dummyTest', () => {
-  test('dummy returns one', () => {
-    const result = listHelper.dummy(blogs)
+  test('dummy returns one', async () => {
+    const result = await listHelper.dummy(blogs)
     expect(result).toBe(1)
   })
 })
 
 describe('likesTest', () => {
-  test('returns 36 likes', () => {
-    const result = listHelper.totalLikes(blogs)
+  test('returns 36 likes', async () => {
+    const result = await listHelper.totalLikes(blogs)
     expect(result).toBe(36)
   })
 })
 
 describe('favoriteTest', () => {
   
-  expectedResult = {"__v": 0, "_id": "5a422b3a1b54a676234d17f9", "author": "Edsger W. Dijkstra", "likes": 12, "title": "Canonical string reduction", "url": "http://www.cs.utexas.edu/~EWD/transcriptions/EWD08xx/EWD808.html"}
-
   test('Returns the blog with most likes.', () => {
+    expectedResult = {"__v": 0, "_id": "5a422b3a1b54a676234d17f9", "author": "Edsger W. Dijkstra", "likes": 12, "title": "Canonical string reduction", "url": "http://www.cs.utexas.edu/~EWD/transcriptions/EWD08xx/EWD808.html"}
     const result = listHelper.favoriteBlog(blogs)
     expect(result).toEqual(expectedResult)
   })
@@ -77,20 +76,18 @@ describe('favoriteTest', () => {
 
 describe('mostBlogsTest', () => {
   
-  expectedResult = {author: "Robert C. Martin", "blogs": 3}
-
-  test('Returns the author with most blog articles.', () => {
-    const result = listHelper.mostBlogs(blogs)
+  test('Returns the author with most blog articles.', async () => {
+    expectedResult = {author: "Robert C. Martin", "blogs": 3}
+    const result = await listHelper.mostBlogs(blogs)
     expect(result).toEqual(expectedResult)
   })
 })
 
 describe('mostLikesTest', () => {
   
-  expectedResult = { author: 'Edsger W. Dijkstra', likes: 17 }
-
-  test.only('Returns the author with most likes.', () => {
-    const result = listHelper.mostLikes(blogs)
+  test('Returns the author with most likes.', async () => {
+    expectedResult = { author: 'Edsger W. Dijkstra', likes: 17 }
+    const result = await listHelper.mostLikes(blogs)
     expect(result).toEqual(expectedResult)
   })
 })

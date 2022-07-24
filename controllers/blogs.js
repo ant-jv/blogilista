@@ -17,11 +17,8 @@ blogsRouter.post('/', async (request, response) => {
 
     if (request.body.hasOwnProperty('title') && request.body.hasOwnProperty('url')) {
 
-        console.log('aaaa')
-        
         const body = request.body
 
-        console.log(request.token)
         const decodedToken = jwt.verify(request.token, process.env.SECRET)
         if (!request.token || !decodedToken.id) {
             return response.status(401).json({ error: 'token missing or invalid'})
@@ -48,8 +45,20 @@ blogsRouter.post('/', async (request, response) => {
 })
 
 blogsRouter.delete('/:id', async (request, response) => {
-    await Blog.findByIdAndRemove(request.params.id)
-    response.status(204).end()
+
+    blog = await Blog.findById(request.params.id)
+    if (!blog) {
+        return response.status(401).json({ error: 'blog not found'})
+    }
+    if (!request.token || !request.user.id.toString()) {
+        return response.status(401).json({ error: 'token missing or invalid'})
+    }
+    if (blog.user.toString() === request.user.id.toString()) {
+        await Blog.findByIdAndRemove(request.params.id)
+        response.status(204).end()
+    } else {
+        return response.status(401).json({ error: 'access denied'})
+    }
 })
 
 blogsRouter.put('/:id', async (request, response) => {
